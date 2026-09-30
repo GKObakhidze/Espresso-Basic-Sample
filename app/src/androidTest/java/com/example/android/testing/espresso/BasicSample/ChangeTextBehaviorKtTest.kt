@@ -60,30 +60,33 @@ class ChangeTextBehaviorKtTest {
      * and close it after each test. This is a replacement for
      * [androidx.test.rule.ActivityTestRule].
      */
-    @get:Rule var activityScenarioRule = activityScenarioRule<MainActivity>()
+    @get:Rule
+    var activityScenarioRule = activityScenarioRule<MainActivity>()
     val STRING_TO_BE_TYPED = "I like mobile testing"
 
     @Test
-    fun changeText_sameActivity() {
+    fun changeText_updatesTextViewInSameActivity() {
+        val foodName = "Fire Wok Noodles"
 
-        // Type text and then press the button.
         onView(withId(R.id.editTextUserInput))
-                .perform(typeText(STRING_TO_BE_TYPED), closeSoftKeyboard())
+            .perform(typeText(foodName), closeSoftKeyboard())
         onView(withId(R.id.changeTextBt)).perform(click())
-
-
-        // Check that the text was changed.
-        onView(withId(R.id.textToBeChanged)).check(matches(withText(STRING_TO_BE_TYPED)))
+        onView(withId(R.id.textToBeChanged)).check(matches(withText(foodName)))
     }
 
-    @Test
-    fun changeText_newActivity() {
-        // Type text and then press the button.
-        onView(withId(R.id.editTextUserInput)).perform(typeText(STRING_TO_BE_TYPED),
-                closeSoftKeyboard())
-        onView(withId(R.id.activityChangeTextBtn)).perform(click())
 
-        // This view is in a different Activity, no need to tell Espresso.
-        onView(withId(R.id.show_text_view)).check(matches(withText(STRING_TO_BE_TYPED)))
+    @Test
+    fun changeText_opensNewActivityWithText() {
+        val firstMovie = "The Matrix"
+        val secondMovie = "Interstellar"
+
+        onView(withId(R.id.editTextUserInput))
+            .perform(typeText(firstMovie), closeSoftKeyboard())
+        onView(withId(R.id.changeTextBt)).perform(click())
+        onView(withId(R.id.textToBeChanged)).check(matches(withText(firstMovie)))
+        onView(withId(R.id.editTextUserInput))
+            .perform(clearText(), typeText(secondMovie), closeSoftKeyboard())
+        onView(withId(R.id.activityChangeTextBtn)).perform(click())
+        onView(withId(R.id.show_text_view)).check(matches(withText(secondMovie)))
     }
 }
