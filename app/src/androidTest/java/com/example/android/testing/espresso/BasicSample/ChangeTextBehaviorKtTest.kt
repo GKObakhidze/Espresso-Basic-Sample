@@ -22,6 +22,7 @@ import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -61,29 +62,40 @@ class ChangeTextBehaviorKtTest {
      * [androidx.test.rule.ActivityTestRule].
      */
     @get:Rule var activityScenarioRule = activityScenarioRule<MainActivity>()
-    val STRING_TO_BE_TYPED = "I like mobile testing"
 
     @Test
     fun changeText_sameActivity() {
+        val favouriteFood="khinkali"
 
         // Type text and then press the button.
         onView(withId(R.id.editTextUserInput))
-                .perform(typeText(STRING_TO_BE_TYPED), closeSoftKeyboard())
+                .perform(typeText(favouriteFood), closeSoftKeyboard())
         onView(withId(R.id.changeTextBt)).perform(click())
 
 
         // Check that the text was changed.
-        onView(withId(R.id.textToBeChanged)).check(matches(withText(STRING_TO_BE_TYPED)))
+        onView(withId(R.id.textToBeChanged)).check(matches(withText(favouriteFood)))
     }
 
     @Test
-    fun changeText_newActivity() {
-        // Type text and then press the button.
-        onView(withId(R.id.editTextUserInput)).perform(typeText(STRING_TO_BE_TYPED),
-                closeSoftKeyboard())
+    fun changeText_thenOpenActivity_secondMovieIsShownOnNextScreen() {
+        val firstMovie = "Dark Knight"
+        val secondMovie = "Spider man"
+
+        // Type the first movie and press the Change text button.
+        onView(withId(R.id.editTextUserInput)).perform(typeText(firstMovie),
+            closeSoftKeyboard())
+        onView(withId(R.id.changeTextBt)).perform(click())
+
+        // Check that the text above the input field was changed.
+        onView(withId(R.id.textToBeChanged)).check(matches(withText(firstMovie)))
+
+        // Clear the field, type the second movie and open the new Activity.
+        onView(withId(R.id.editTextUserInput)).perform(clearText(), typeText(secondMovie),
+            closeSoftKeyboard())
         onView(withId(R.id.activityChangeTextBtn)).perform(click())
 
         // This view is in a different Activity, no need to tell Espresso.
-        onView(withId(R.id.show_text_view)).check(matches(withText(STRING_TO_BE_TYPED)))
+        onView(withId(R.id.show_text_view)).check(matches(withText(secondMovie)))
     }
 }
