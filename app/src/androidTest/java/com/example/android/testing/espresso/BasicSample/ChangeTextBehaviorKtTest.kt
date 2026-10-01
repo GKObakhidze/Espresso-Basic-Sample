@@ -16,32 +16,23 @@
 
 package com.example.android.testing.espresso.BasicSample
 
-import androidx.test.ext.junit.rules.activityScenarioRule
 import android.app.Activity
-import android.view.View
-import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.action.ViewActions.clearText
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.example.android.testing.espresso.BasicSample.Helper.getText
-import com.example.android.testing.espresso.BasicSample.Helper.tap
-import com.example.android.testing.espresso.BasicSample.Helper.typeText
-import com.example.android.testing.espresso.BasicSample.Helper.waitForViewVisible
-import org.hamcrest.Matcher
-import org.junit.Assert
-import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 /**
  * The kotlin equivalent to the ChangeTextBehaviorTest, that
@@ -61,29 +52,43 @@ class ChangeTextBehaviorKtTest {
      * [androidx.test.rule.ActivityTestRule].
      */
     @get:Rule var activityScenarioRule = activityScenarioRule<MainActivity>()
-    val STRING_TO_BE_TYPED = "I like mobile testing"
 
     @Test
-    fun changeText_sameActivity() {
-
-        // Type text and then press the button.
+    fun changeText_displaysFavoriteFoodInSameActivity() {
+        // Enter the favorite food and close the keyboard
         onView(withId(R.id.editTextUserInput))
-                .perform(typeText(STRING_TO_BE_TYPED), closeSoftKeyboard())
+            .perform(typeText(Constants.FAVORITE_FOOD), closeSoftKeyboard())
+
+        // Tap the "Change text" button
         onView(withId(R.id.changeTextBt)).perform(click())
 
-
-        // Check that the text was changed.
-        onView(withId(R.id.textToBeChanged)).check(matches(withText(STRING_TO_BE_TYPED)))
+        // Verify the food name is shown in the text above the input field
+        onView(withId(R.id.textToBeChanged))
+            .check(matches(withText(Constants.FAVORITE_FOOD)))
     }
 
     @Test
-    fun changeText_newActivity() {
-        // Type text and then press the button.
-        onView(withId(R.id.editTextUserInput)).perform(typeText(STRING_TO_BE_TYPED),
-                closeSoftKeyboard())
+    fun changeTextAndOpenActivity_displaysSecondMovieOnNewScreen() {
+        // Enter the first movie and close the keyboard
+        onView(withId(R.id.editTextUserInput))
+            .perform(typeText(Constants.FIRST_MOVIE), closeSoftKeyboard())
+
+        // Tap the "Change text" button
+        onView(withId(R.id.changeTextBt)).perform(click())
+
+        // Verify the first movie is shown in the text above the input field
+        onView(withId(R.id.textToBeChanged))
+            .check(matches(withText(Constants.FIRST_MOVIE)))
+
+        // Clear the field, enter the second movie and close the keyboard
+        onView(withId(R.id.editTextUserInput))
+            .perform(clearText(), typeText(Constants.SECOND_MOVIE), closeSoftKeyboard())
+
+        // Tap the "Open activity and change text" button
         onView(withId(R.id.activityChangeTextBtn)).perform(click())
 
-        // This view is in a different Activity, no need to tell Espresso.
-        onView(withId(R.id.show_text_view)).check(matches(withText(STRING_TO_BE_TYPED)))
+        // Verify the second movie is shown on the next screen
+        onView(withId(R.id.show_text_view))
+            .check(matches(withText(Constants.SECOND_MOVIE)))
     }
 }
