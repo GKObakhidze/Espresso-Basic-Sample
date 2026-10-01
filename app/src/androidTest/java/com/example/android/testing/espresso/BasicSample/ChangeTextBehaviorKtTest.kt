@@ -65,25 +65,35 @@ class ChangeTextBehaviorKtTest {
 
     @Test
     fun changeText_sameActivity() {
+        val favoriteFood = "khachapuri"
 
         // Type text and then press the button.
         onView(withId(R.id.editTextUserInput))
-                .perform(typeText(STRING_TO_BE_TYPED), closeSoftKeyboard())
+                .perform(typeText(favoriteFood), closeSoftKeyboard())
         onView(withId(R.id.changeTextBt)).perform(click())
 
 
         // Check that the text was changed.
-        onView(withId(R.id.textToBeChanged)).check(matches(withText(STRING_TO_BE_TYPED)))
+        onView(withId(R.id.textToBeChanged)).check(matches(withText(favoriteFood)))
     }
 
     @Test
     fun changeText_newActivity() {
+        val firstMovie = "Harry Potter and the Order of the Phoenix"
+        val secondMovie = "Harry Potter and the Half-Blood Prince"
+
         // Type text and then press the button.
-        onView(withId(R.id.editTextUserInput)).perform(typeText(STRING_TO_BE_TYPED),
+        onView(withId(R.id.editTextUserInput)).perform(typeText(firstMovie),
                 closeSoftKeyboard())
-        onView(withId(R.id.activityChangeTextBtn)).perform(click())
+        onView(withId(R.id.changeTextBt)).perform(click())
 
         // This view is in a different Activity, no need to tell Espresso.
-        onView(withId(R.id.show_text_view)).check(matches(withText(STRING_TO_BE_TYPED)))
+        onView(withId(R.id.textToBeChanged)).check(matches(withText(firstMovie)))
+
+        onView(withId(R.id.editTextUserInput)).perform(clearText(), typeText(secondMovie),
+            closeSoftKeyboard())
+        onView(withId(R.id.activityChangeTextBtn)).perform(click())
+
+        onView(withId(R.id.show_text_view)).check(matches(withText(secondMovie)))
     }
 }
